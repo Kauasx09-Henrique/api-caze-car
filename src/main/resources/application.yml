@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: loja-carros-api
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/loja_carros}
+    username: ${DB_USERNAME:loja_carros}
+    password: ${DB_PASSWORD:loja_carros}
+
+  jpa:
+    hibernate:
+      # O schema é gerenciado pelo Flyway; o Hibernate apenas valida o mapeamento.
+      ddl-auto: validate
+    open-in-view: false
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: America/Sao_Paulo
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+server:
+  port: 8080
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
