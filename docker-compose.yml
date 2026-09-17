@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: loja-carros-db
+    environment:
+      POSTGRES_DB: loja_carros
+      POSTGRES_USER: loja_carros
+      POSTGRES_PASSWORD: loja_carros
+    ports:
+      - "5432:5432"
+    volumes:
+      - loja_carros_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U loja_carros -d loja_carros"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  loja_carros_data:
