@@ -17,7 +17,7 @@ public class VeiculoRequestDTO {
 
     @NotNull
     private Long modeloId;
-s
+
     @NotNull
     private Long combustivelId;
 

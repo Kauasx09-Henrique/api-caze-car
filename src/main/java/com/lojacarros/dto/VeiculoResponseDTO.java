@@ -3,6 +3,7 @@ package com.lojacarros.dto;
 import com.lojacarros.enums.StatusVeiculo;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,4 +27,14 @@ public class VeiculoResponseDTO {
     private StatusVeiculo status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    // Nomes resolvidos para exibição direta no front, sem precisar de outra chamada
+    private String marca;
+    private String modeloNome;
+    private String corNome;
+    private String combustivelNome;
+    private String cambioNome;
+    private String carroceriaNome;
+    private String imagem;
+    private List<String> imagens;
 }

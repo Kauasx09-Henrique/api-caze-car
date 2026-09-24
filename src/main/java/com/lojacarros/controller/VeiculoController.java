@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,5 +33,12 @@ public class VeiculoController {
     @GetMapping
     public ResponseEntity<List<VeiculoResponseDTO>> listar() {
         return ResponseEntity.ok(veiculoService.listarTodos());
+    }
+
+    // 👇 NOVO MÉTODO: Busca um veículo específico pelo ID 👇
+    @GetMapping("/{id}")
+    public ResponseEntity<VeiculoResponseDTO> buscarPorId(@PathVariable Long id) {
+        VeiculoResponseDTO response = veiculoService.buscarPorId(id);
+        return ResponseEntity.ok(response);
     }
 }

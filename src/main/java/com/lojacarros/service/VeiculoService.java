@@ -9,22 +9,30 @@ import com.lojacarros.entity.Cor;
 import com.lojacarros.entity.Modelo;
 import com.lojacarros.entity.Usuario;
 import com.lojacarros.entity.Veiculo;
+import com.lojacarros.entity.VeiculoFoto;
 import com.lojacarros.repository.UsuarioRepository;
+import com.lojacarros.repository.VeiculoFotoRepository;
 import com.lojacarros.repository.VeiculoRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class VeiculoService {
 
     private final VeiculoRepository veiculoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final VeiculoFotoRepository veiculoFotoRepository;
 
-    public VeiculoService(VeiculoRepository veiculoRepository, UsuarioRepository usuarioRepository) {
+    public VeiculoService(
+            VeiculoRepository veiculoRepository,
+            UsuarioRepository usuarioRepository,
+            VeiculoFotoRepository veiculoFotoRepository) {
         this.veiculoRepository = veiculoRepository;
         this.usuarioRepository = usuarioRepository;
+        this.veiculoFotoRepository = veiculoFotoRepository;
     }
 
     public VeiculoResponseDTO criar(VeiculoRequestDTO dto) {
@@ -65,9 +73,17 @@ public class VeiculoService {
     }
 
     public List<VeiculoResponseDTO> listarTodos() {
-        return veiculoRepository.findAll().stream()
+        return veiculoRepository.findAllComDetalhes().stream()
                 .map(this::converterParaDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public VeiculoResponseDTO buscarPorId(Long id) {
+        Veiculo veiculo = veiculoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Veículo não encontrado com o ID: " + id));
+
+        return converterParaDTO(veiculo);
     }
 
     private VeiculoResponseDTO converterParaDTO(Veiculo veiculo) {
@@ -75,11 +91,36 @@ public class VeiculoService {
         BeanUtils.copyProperties(veiculo, dto);
 
         if (veiculo.getVendedor() != null) dto.setVendedorId(veiculo.getVendedor().getId());
-        if (veiculo.getModelo() != null) dto.setModeloId(veiculo.getModelo().getId());
-        if (veiculo.getCombustivel() != null) dto.setCombustivelId(veiculo.getCombustivel().getId());
-        if (veiculo.getCambio() != null) dto.setCambioId(veiculo.getCambio().getId());
-        if (veiculo.getCarroceria() != null) dto.setCarroceriaId(veiculo.getCarroceria().getId());
-        if (veiculo.getCor() != null) dto.setCorId(veiculo.getCor().getId());
+
+        if (veiculo.getModelo() != null) {
+            dto.setModeloId(veiculo.getModelo().getId());
+            dto.setModeloNome(veiculo.getModelo().getNome());
+            if (veiculo.getModelo().getMarca() != null) {
+                dto.setMarca(veiculo.getModelo().getMarca().getNome());
+            }
+        }
+        if (veiculo.getCombustivel() != null) {
+            dto.setCombustivelId(veiculo.getCombustivel().getId());
+            dto.setCombustivelNome(veiculo.getCombustivel().getNome());
+        }
+        if (veiculo.getCambio() != null) {
+            dto.setCambioId(veiculo.getCambio().getId());
+            dto.setCambioNome(veiculo.getCambio().getNome());
+        }
+        if (veiculo.getCarroceria() != null) {
+            dto.setCarroceriaId(veiculo.getCarroceria().getId());
+            dto.setCarroceriaNome(veiculo.getCarroceria().getNome());
+        }
+        if (veiculo.getCor() != null) {
+            dto.setCorId(veiculo.getCor().getId());
+            dto.setCorNome(veiculo.getCor().getNome());
+        }
+
+        List<String> urls = veiculoFotoRepository.findByVeiculoIdOrderByOrdemAsc(veiculo.getId()).stream()
+                .map(VeiculoFoto::getUrl)
+                .collect(Collectors.toList());
+        dto.setImagens(urls);
+        dto.setImagem(urls.isEmpty() ? null : urls.get(0));
 
         return dto;
     }

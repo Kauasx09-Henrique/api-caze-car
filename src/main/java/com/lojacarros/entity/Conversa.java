@@ -1,5 +1,6 @@
 package com.lojacarros.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -28,10 +29,13 @@ public class Conversa extends AuditoriaBase {
     private Veiculo veiculo;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "comprador_id", nullable = false)
+    @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario comprador;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "vendedor_id", nullable = false)
     private Usuario vendedor;
+
+    @Column(nullable = false, length = 20)
+    private String status;
 }
